@@ -1,11 +1,66 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
-  </body>
-</html>
+<style>
+
+#chart svg {
+  height: 400px;
+}
+
+</style>
+
+<div id="chart">
+  <svg></svg>
+</div>
+<svg class="chart"></svg>
+<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.3/nv.d3.js" ></script>
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.3/nv.d3.css">
+<script>
+var data =<%-JSON.stringify(data)%>;
+// console.log(data);
+// d3.tsv("data.tsv", function(error, data) {
+//     var dataToPlot = Object.keys(data[0]).filter(function(k){return k!="date"})
+//             .map(function(k){
+//               return {"key":k,"values":data.map(function(d){
+//               return {
+//                 //let's make this a real date
+//                 "x":d3.time.format("%d-%b-%y").parse(d.date),
+//                 "y":+d.values
+//               }
+//               })}
+//             })      
+    
+
+nv.addGraph(function() {
+  var chart = nv.models.lineWithFocusChart()
+              .x( function(d){ return d3.time.format("%Y-%m-%d").parse(d.x);})
+              .y(function(d){return +d.y;})
+              .useInteractiveGuideline(true);
+  // chart.useInteractiveGuideline(true);
+ 
+
+  chart.xAxis
+    .axisLabel('Date')
+    .tickFormat(function(d) { return d3.time.format("%d-%b-%y")(new Date(d)); });
+
+  chart.yAxis
+    .axisLabel('Price ($)')
+    .tickFormat(d3.format(', .1f'));
+
+  chart.y2Axis
+    .tickFormat(d3.format(', .1f'));
+
+  chart.x2Axis
+    .tickFormat(function(d) { return d3.time.format("%d-%b-%y")(new Date(d)); });
+    
+  d3.select('#chart svg')
+    .datum(data)
+    .transition().duration(500)
+    .call(chart);
+    
+  nv.utils.windowResize(chart.update);
+
+  return chart;
+});
+// });
+
+</script>
