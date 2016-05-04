@@ -1,8 +1,45 @@
 body {
-  padding: 50px;
+  /*padding: 50px;*/
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+}
+
+#chart svg {
+  height: 500px;
+  width: 800px;
+}
+
+.inline {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.stockDiv {
+  height: 100px;
+  width: 250px;
+  margin: 10px;
+  line-height: 100px;
+  background-color: yellow;
+  text-align: center;
+  
+}
+
+.remove {
+  /*display: inline-block;*/
+  float: right;
+  height: 100%;
+  margin-right: 0px;
+  display: none;
+}
+
+.stockDiv:hover .remove {
+  display: block;
+  background-color: red;
+}
+
+.stockDiv:hover {
+  border: 1px solid red;
 }
