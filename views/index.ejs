@@ -55,22 +55,15 @@ $(document).ready(function(){
   });
   
   //////////////////////remove stock//////////////////////////
-  $('#stocksBox').on('click','.remove',function() {
+  $('#stocksBox').on('click','.stockDiv',function() {
     
-    // console.log($(this).parent().text(), _.indexOf(stocksData, _.findWhere(stocksData, { key : $(this).parent().text()})));
-    var code = $(this).parent().text();
+    var code = $(this).children(".stockInfo").children(".codeDiv").text();
+    
     $.ajax({
       type: "post",
       url: "/deleteStock",
       data: {key: code},
       success: function() {
-        console.log("success", $(this).parent().text(), _.indexOf(stocksData, _.findWhere(stocksData, { key : $(this).parent().text()})));
-        // var indexOfStock =  _.indexOf(stocksData, _.findWhere(stocksData, { key : $(this).parent().text()}));
-        // if(indexOfStock >= 0) {
-        //   stocksData.splice(indexOfStock, 1);
-        //   drawGraph ();
-        // 	$(this).parent().remove();
-        // }
         
       },
       error: function(msg) {
@@ -78,7 +71,7 @@ $(document).ready(function(){
       }
     });
     
-    $(this).parent().remove();
+    // $(this).remove();
   });
   
   $('#searchForm').submit(function(ev){
@@ -102,23 +95,27 @@ $(document).ready(function(){
   
   function initStockDivs() {
     stocksData.forEach(function(item) {
-      addStockDiv(item.key, "");
+      addStockDiv(item.key, item.name);
     });  
   }
   
   function startWS() {
     var socket = io.connect("https://heroku-env-air000.c9users.io:8081");
-            socket.on("news", function(data) {
-                
-                if(data.msg) alert(data.msg);
-                socket.emit("my other event", { message : "client emit" } );
-            });
             
             socket.on("addStock", function(data) {
               
               stocksData.push(data.stock);
               drawGraph ();
-              addStockDiv(data.stock.key, data.discript);
+              addStockDiv(data.stock.key, data.stock.name);
+            });
+            
+            socket.on("deleStock",function(data) {
+              var indexOfStock =  _.indexOf(stocksData, _.findWhere(stocksData, { key : data.key}));
+              if(indexOfStock >= 0) {
+                stocksData.splice(indexOfStock, 1);
+                drawGraph ();
+              $('div').filter(function(){ return $(this).text() === data.key;}).parent().parent().remove();
+              }
             });
             
             socket.on("disconnect", function() {
@@ -128,7 +125,17 @@ $(document).ready(function(){
   }
   
   function addStockDiv(code, discript) {
-    $('#stocksBox').append('<div class="stockDiv">' + code + '<div class="remove"><i class="glyphicon glyphicon-remove"></i></div></div>');
+    // $('#stocksBox').append('<div class="stockDiv">' + code + '<div class="remove"><i class="glyphicon glyphicon-remove"></i></div></div>');
+    
+    $('#stocksBox').append('<div class="stockDiv">'
+        +'<div class="stockInfo">'
+          +'<div class="codeDiv">' + code +'</div>'
+          +'<div class="discDiv">'+ discript +'</div>'
+        +'</div>'
+        +'<div class="remove">'
+          +'<i class="glyphicon glyphicon-remove"></i>'
+        +'</div>'
+      +'</div>');                     
   }
   function drawGraph () {
     

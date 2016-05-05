@@ -1,6 +1,7 @@
 body {
   /*padding: 50px;*/
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  text-align:center;
 }
 
 a {
@@ -21,25 +22,58 @@ a {
   height: 100px;
   width: 250px;
   margin: 10px;
-  line-height: 100px;
-  background-color: yellow;
+  background-color: #a6c1d1;
   text-align: center;
   
 }
 
-.remove {
+.stockInfo {
   /*display: inline-block;*/
+  float: left;
+  height: 100%;
+  width: 80%;
+  margin-left: 10px;
+  /*text-align: center;*/
+  
+}
+
+.codeDiv, .discDiv {
+  width: 100%;
+  height: 50%;
+  /*text-align: center;*/
+  /*background-color: blue;*/
+  text-align: left;
+}
+
+.codeDiv {
+  line-height: 50px;  
+  font-family: Verdana, Geneva, sans-serif;
+  color: #284252;
+  font-size: 30px;
+  /*font-weight: bold;*/
+}
+
+.discDiv {
+  font-family: Verdana, Geneva, sans-serif;
+  color: #7d929e;
+  font-size: 13px;
+  word-wrap: break-word;
+}
+
+.remove {
   float: right;
   height: 100%;
   margin-right: 0px;
+  line-height: 100px;
   display: none;
 }
 
 .stockDiv:hover .remove {
   display: block;
-  background-color: red;
+  background-color: #ff6842;
 }
 
 .stockDiv:hover {
-  border: 1px solid red;
+  border: 1px solid #ff6842;
+  cursor: pointer;
 }

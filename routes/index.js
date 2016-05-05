@@ -9,14 +9,9 @@ var io = require('socket.io')(server);
 io.on('connection', function(socket){
     console.log("connection");
   
-  socket.emit('news', { hello: 'world' });
-  socket.on('my other event', function (data) {
-    console.log(data);
-  });
-  
-  socket.on('disconnect', function(){
+    socket.on('disconnect', function(){
       console.log("disconnect");
-  });
+    });
 });
 
 server.listen(8081);
@@ -59,24 +54,6 @@ router.get('/', function(req, res, next) {
             
         });
     });
-    // var stocks = ["AAPL", "GOOG", "TSLA"];
-    // var urls = [];
-    // stocks.forEach(function(stock) {
-    //     var start = new Date();
-    //     start.setFullYear(start.getFullYear()-4);
-    //     var start_date = [
-    //       start.getFullYear(),
-    //       ('0' + (start.getMonth() + 1)).slice(-2),
-    //       ('0' + start.getDate()).slice(-2)
-    //     ].join('-');
-    //   urls.push("https://www.quandl.com/api/v3/datasets/WIKI/"+stock+".json?api_key=54xxcEe2PXpMpYTmXP7a&start_date="+start_date+"&column_index=4"); 
-    // });
-    // // console.log(urls);
-    // processAllUrls(urls, function(data) {
-    //     res.render('index', { data: data });
-        
-    // });
-    
     
 });
 
@@ -97,7 +74,7 @@ router.post('/addStock', function(req, res) {
     }, function (error, response, body) {
       if (!error && response.statusCode == 200) {
         body.dataset.data.reverse();
-        var stock = {key: body.dataset.dataset_code, values: body.dataset.data.map(function(v) {
+        var stock = {key: body.dataset.dataset_code, name: body.dataset.name, values: body.dataset.data.map(function(v) {
             return {x: v[0], y: v[1]};
         })};
         Stock.find({stockCode: stock.key}, function(err, item) {
@@ -111,7 +88,7 @@ router.post('/addStock', function(req, res) {
                 
                 //////////////boardcast to clients////////////////////////////
                 
-                io.sockets.emit('addStock', {stock: stock, discript: body.dataset.name});
+                io.sockets.emit('addStock', {stock: stock});
                 res.send();
             }else{
                 res.status(400);
@@ -136,6 +113,7 @@ router.post('/deleteStock', function(req, res) {
             res.status(400);
             res.send(err);
         }else {
+            io.sockets.emit('deleStock', {key: req.body.key});
             res.send();
         }
      });
@@ -148,7 +126,7 @@ function processAllUrls(Urls, callback) {
         var stocks = [];
         data.forEach(function(item) {
             item.body.dataset.data.reverse(); //NVD3 requires your x axis data to be sorted from earliest to latest, not the other way 
-            stocks.push({key: item.body.dataset.dataset_code, values: item.body.dataset.data.map(function (v) {
+            stocks.push({key: item.body.dataset.dataset_code, name: item.body.dataset.name, values: item.body.dataset.data.map(function (v) {
                 
                 return {x: v[0], y: v[1]};
             })});
